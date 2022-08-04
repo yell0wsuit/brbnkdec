@@ -8,5 +8,10 @@
             writer.WriteValue(value);
             writer.WriteEndElement();
         }
+
+        public static void WriteAttributeInt(this XmlWriter writer, string attribute, int i)
+        {
+            writer.WriteAttributeString(attribute, i.ToString());
+        }
     }
 }

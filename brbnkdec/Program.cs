@@ -92,13 +92,13 @@ namespace brbnkdec
             int instrumentDataTablePosition = (int)reader.Position;
             int instrumentCount = reader.ReadInt32();
             writer.WriteStartElement("inst_array");
-            writer.WriteAttributeString("size", instrumentCount.ToString());
+            writer.WriteAttributeInt("size", instrumentCount);
 
             for (int i = 0; i < instrumentCount; i++)
             {
                 writer.WriteStartElement("inst");
                 writer.WriteAttributeString("name", "INST_" + i);
-                writer.WriteAttributeString("prg_no", i.ToString());
+                writer.WriteAttributeInt("prg_no", i);
                 writer.WriteAttributeString("adsr_envelope_select", "VelRegion");
                 writer.WriteSimpleElement("volume", 1f);
                 writer.WriteSimpleElement("fine_tune", 0);
@@ -142,6 +142,7 @@ namespace brbnkdec
             }
 
             writer.WriteStartElement(isKeyRegion ? "key_region_array" : "vel_region_array");
+            int instrumentParameterTypePosition = (int)reader.Position;
             byte instrumentParameterType = reader.ReadByte();
             reader.Position += 2;
             int instrumentParameterOffset = reader.ReadInt32();
@@ -150,18 +151,18 @@ namespace brbnkdec
             switch (instrumentParameterType)
             {
                 case 1:
-                    writer.WriteAttributeString("size", 1.ToString());
+                    writer.WriteAttributeInt("size", 1);
                     writer.WriteStartElement(isKeyRegion ? "key_region" : "vel_region");
-                    writer.WriteAttributeString("range_min", isKeyRegion ? lastKeyRange.ToString() : lastVelRange.ToString());
-                    writer.WriteAttributeString("range_max", 127.ToString());
+                    writer.WriteAttributeInt("range_min", isKeyRegion ? lastKeyRange : lastVelRange);
+                    writer.WriteAttributeInt("range_max", 127);
                     if (isKeyRegion)
                     {
                         writer.WriteSimpleElement("pan", 64);
                         writer.WriteStartElement("vel_region_array");
-                        writer.WriteAttributeString("size", 1.ToString());
+                        writer.WriteAttributeInt("size", 1);
                         writer.WriteStartElement("vel_region");
-                        writer.WriteAttributeString("range_min", lastVelRange.ToString());
-                        writer.WriteAttributeString("range_max", 127.ToString());
+                        writer.WriteAttributeInt("range_min", lastVelRange);
+                        writer.WriteAttributeInt("range_max", 127);
                     }
                     int audioIndex = reader.ReadInt32();
                     writer.WriteStartElement("file");
@@ -214,7 +215,7 @@ namespace brbnkdec
                 case 2:
                     {
                         byte regionCount = reader.ReadByte();
-                        writer.WriteAttributeString("size", regionCount.ToString());
+                        writer.WriteAttributeInt("size", regionCount);
                         List<byte> regionLastIds = new List<byte>();
                         for (int i = 0; i < regionCount; i++)
                         {
@@ -233,8 +234,8 @@ namespace brbnkdec
 
                                 reader.Position -= 2;
                                 writer.WriteStartElement("key_region");
-                                writer.WriteAttributeString("range_min", (i == 0 ? 0 : regionLastIds[i - 1] + 1).ToString());
-                                writer.WriteAttributeString("range_max", regionLastIds[i].ToString());
+                                writer.WriteAttributeInt("range_min", i == 0 ? 0 : regionLastIds[i - 1] + 1);
+                                writer.WriteAttributeInt("range_max", regionLastIds[i]);
                                 writer.WriteSimpleElement("pan", 64);
                                 if (!readInstrumentElement(reader, writer, instrumentDataTablePosition, false))
                                     return false;
@@ -254,7 +255,7 @@ namespace brbnkdec
                     {
                         ushort regionCount = reader.ReadUInt16();
                         regionCount++; // 128 for BNK_SEQ_O_OPTION's big group although it's 0x7F?
-                        writer.WriteAttributeString("size", regionCount.ToString());
+                        writer.WriteAttributeInt("size", regionCount);
                         reader.AlignPosition(4);
                         if (isKeyRegion)
                         {
@@ -267,8 +268,8 @@ namespace brbnkdec
 
                                 reader.Position -= 2;
                                 writer.WriteStartElement("key_region");
-                                writer.WriteAttributeString("range_min", i.ToString());
-                                writer.WriteAttributeString("range_max", i.ToString());
+                                writer.WriteAttributeInt("range_min", i);
+                                writer.WriteAttributeInt("range_max", i);
                                 writer.WriteSimpleElement("pan", 64);
                                 if (!readInstrumentElement(reader, writer, instrumentDataTablePosition, false))
                                     return false;
@@ -288,7 +289,7 @@ namespace brbnkdec
                     break;
 
                 default:
-                    Console.WriteLine("Unknown Instrument Parameter type: " + instrumentParameterType + " at 0x" + (reader.Position - 1).ToString("X"));
+                    Console.WriteLine("Unknown Instrument Parameter type: " + instrumentParameterType + " at 0x" + instrumentParameterTypePosition.ToString("X"));
                     return false;
             }
             reader.Position = instrumentParamenterEndPosition;
