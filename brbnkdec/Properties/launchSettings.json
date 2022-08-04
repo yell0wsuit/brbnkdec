@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "brbnkdec": {
+      "commandName": "Project",
+      "commandLineArgs": "BNK_SEQ_O_SELECT_CH.brbnk BNK_SEQ_O_SELECT_CH.rbnk"
+    }
+  }
+}
