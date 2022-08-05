@@ -22,6 +22,7 @@ namespace brbnkdec
             }
 
             outputName = Path.GetFileNameWithoutExtension(args[1]);
+            decode(args[0], args[1]);
         }
 
         static void decode(string inputPath, string outputPath)
@@ -253,13 +254,14 @@ namespace brbnkdec
 
                 case 3:
                     {
-                        ushort regionCount = reader.ReadUInt16();
-                        regionCount++; // 128 for BNK_SEQ_O_OPTION's big group although it's 0x7F?
-                        writer.WriteAttributeInt("size", regionCount);
+                        byte minimumIndex = reader.ReadByte();
+                        byte maximumIndex = reader.ReadByte();
+                        int indexCount = maximumIndex - minimumIndex + 1;
+                        writer.WriteAttributeInt("size", indexCount);
                         reader.AlignPosition(4);
                         if (isKeyRegion)
                         {
-                            for (int i = 0; i < regionCount; i++)
+                            for (int i = minimumIndex; i <= maximumIndex; i++)
                             {
                                 byte nextInstrumentParameterMagic = reader.ReadByte();
                                 byte nextInstrumentParameterType = reader.ReadByte();
