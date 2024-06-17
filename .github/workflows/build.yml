@@ -32,10 +32,9 @@ jobs:
 
     - name: Archive build artifacts
       run: |
-        mkdir -p release
-        cd ./publish
-        zip -r ../release/brbnkdec.zip .
-      shell: bash
+        mkdir release
+        Compress-Archive -Path ./publish/* -DestinationPath ./release/brbnkdec.zip
+      shell: pwsh
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v2
