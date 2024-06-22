@@ -139,7 +139,7 @@ namespace brbnkdec
             if (instrumentParameterMagic != 1)
             {
                 Console.WriteLine("Unknown Instrument Parameter magic: " + instrumentParameterMagic + " at 0x" + (reader.Position - 1).ToString("X"));
-                return false;
+                // return false;
             }
 
             writer.WriteStartElement(isKeyRegion ? "key_region_array" : "vel_region_array");
