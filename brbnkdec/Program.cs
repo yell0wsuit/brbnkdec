@@ -292,7 +292,7 @@ namespace brbnkdec
 
                 default:
                     Console.WriteLine("Unknown Instrument Parameter type: " + instrumentParameterType + " at 0x" + instrumentParameterTypePosition.ToString("X"));
-                    return false;
+                    // return false;
             }
             reader.Position = instrumentParamenterEndPosition;
             return true;
